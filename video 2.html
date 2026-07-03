@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Birthday Gallery</title>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial;
+        background: #0f0f0f;
+        color: white;
+      }
+
+      h2 {
+        padding: 15px;
+        margin: 0;
+      }
+
+      /* =========================
+   GRID (FIXED RESPONSIVE)
+========================= */
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 12px;
+        padding: 15px;
+      }
+
+      /* =========================
+   THUMBNAILS (IMAGES)
+========================= */
+      .thumb {
+        width: 100%;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 12px;
+        cursor: pointer;
+        transition:
+          transform 0.25s ease,
+          filter 0.25s ease;
+      }
+
+      .thumb:hover {
+        transform: scale(1.04);
+        filter: brightness(1.1);
+      }
+
+      /* =========================
+   VIDEO THUMB WRAPPER
+========================= */
+      .video-wrapper {
+        position: relative;
+        width: 100%;
+        height: 140px;
+        cursor: pointer;
+        overflow: hidden;
+        border-radius: 12px;
+      }
+
+      .video-wrapper video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* play icon */
+      .play-icon {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 28px;
+        color: white;
+        background: rgba(0, 0, 0, 0.25);
+        pointer-events: none;
+      }
+
+      /* =========================
+   MODAL BACKDROP (SMOOTH)
+========================= */
+      .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.92);
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+
+        z-index: 999;
+
+        opacity: 0;
+        visibility: hidden;
+        transform: scale(0.96);
+        transition: 0.25s ease;
+      }
+
+      .modal.active {
+        opacity: 1;
+        visibility: visible;
+        transform: scale(1);
+      }
+
+      /* =========================
+   VIEWER
+========================= */
+      #viewer {
+        width: 92%;
+        max-width: 850px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      /* media pop animation */
+      #viewer img,
+      #viewer video {
+        width: 100%;
+        max-height: 80vh;
+        object-fit: contain;
+        border-radius: 12px;
+
+        transform: scale(0.85);
+        opacity: 0;
+        animation: popIn 0.22s ease forwards;
+      }
+
+      @keyframes popIn {
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      /* =========================
+   BACK ICON (MOBILE FIXED)
+========================= */
+      .back-icon {
+        position: fixed;
+        top: 18px;
+        left: 18px;
+
+        width: 52px;
+        height: 52px;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(10px);
+
+        color: #fff;
+        border-radius: 50%;
+
+        font-size: 28px;
+        cursor: pointer;
+
+        z-index: 10000;
+
+        transition: 0.2s ease;
+      }
+
+      .back-icon:hover {
+        background: white;
+        color: black;
+        transform: scale(1.1);
+      }
+
+      /* =========================
+   CLOSE BUTTON
+========================= */
+      .close {
+        position: absolute;
+        top: 18px;
+        right: 20px;
+        font-size: 28px;
+        cursor: pointer;
+      }
+
+      /* =========================
+   BUTTONS
+========================= */
+      button {
+        padding: 10px 14px;
+        margin: 6px;
+        border: none;
+        background: white;
+        cursor: pointer;
+        border-radius: 6px;
+        font-weight: 500;
+      }
+
+      /* =========================
+   LOADING PLACEHOLDER
+========================= */
+      .loading {
+        width: 100%;
+        max-width: 800px;
+        padding: 40px;
+        text-align: center;
+        border-radius: 12px;
+        background: #1c1c1c;
+        color: #ccc;
+        animation: pulse 1.2s infinite alternate;
+      }
+
+      @keyframes pulse {
+        from {
+          background: #1c1c1c;
+        }
+        to {
+          background: #2a2a2a;
+        }
+      }
+
+      /* =========================
+   MOBILE FIXES
+========================= */
+      @media (max-width: 600px) {
+        .grid {
+          grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+        }
+
+        .thumb,
+        .video-wrapper {
+          height: 110px;
+        }
+
+        .back-icon {
+          width: 58px;
+          height: 58px;
+          font-size: 30px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>🎬 Videos</h2>
+
+    <div class="grid">
+      <div class="video-wrapper" onclick="openMedia('video', 0)">
+        <video muted>
+          <source src="./adom/video_1.MP4" />
+        </video>
+        <div class="play-icon">▶</div>
+      </div>
+
+      <div class="video-wrapper" onclick="openMedia('video', 1)">
+        <video muted>
+          <source src="./adom/video_2.MP4" />
+        </video>
+        <div class="play-icon">▶</div>
+      </div>
+
+      <div class="video-wrapper" onclick="openMedia('video', 2)">
+        <video muted>
+          <source src="./adom/video_3.MP4" />
+        </video>
+        <div class="play-icon">▶</div>
+      </div>
+
+
+      <div class="video-wrapper" onclick="openMedia('video', 3)">
+        <video muted>
+          <source src="./adom/video_4.MP4" />
+        </video>
+        <div class="play-icon">▶</div>
+      </div>
+
+      <div class="video-wrapper" onclick="openMedia('video', 4)">
+        <video muted>
+          <source src="./adom/video_5.MP4" />
+        </video>
+        <div class="play-icon">▶</div>
+      </div>
+
+      <div class="video-wrapper" onclick="openMedia('video', 5)">
+        <video muted>
+          <source src="./adom/video_6.MP4" />
+        </video>
+        <div class="play-icon">▶</div>
+      </div>
+    </div>
+
+    <h2>📸 Photos</h2>
+
+    <div class="grid">
+      <img
+        class="thumb"
+        src="./adom/image_1.jpg"
+        onclick="openMedia('image', 0)"
+      />
+      <img
+        class="thumb"
+        src="./adom/image_2.jpg"
+        onclick="openMedia('image', 1)"
+      />
+      <img
+        class="thumb"
+        src="./adom/image_3.jpg"
+        onclick="openMedia('image', 2)"
+      />
+      <img
+        class="thumb"
+        src="./adom/image_4.jpg"
+        onclick="openMedia('image', 3)"
+      />
+      <img
+        class="thumb"
+        src="./adom/image_5.jpg"
+        onclick="openMedia('image', 4)"
+      />
+      <img
+        class="thumb"
+        src="./adom/image_6.jpg"
+        onclick="openMedia('image', 5)"
+      />
+      
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal" id="modal">
+      <!-- BACK ICON -->
+      <div class="back-icon" onclick="closeModal()">←</div>
+
+      <!-- CLOSE ICON -->
+      <div class="close" onclick="closeModal()">✖</div>
+
+      <!-- VIEWER -->
+      <div id="viewer"></div>
+
+      <!-- CONTROLS -->
+      <div>
+        <button onclick="prev()">Prev</button>
+        <button onclick="next()">Next</button>
+      </div>
+    </div>
+    <script>
+      const media = {
+        video: [
+          "./adom/video_1.MP4",
+          "./adom/video_2.MP4",
+          "./adom/video_3.MP4",
+          "./adom/video_4.MP4",
+          "./adom/video_5.MP4",
+          "./adom/video_6.MP4",
+        ],
+        image: [
+          "./adom/image_1.jpg",
+          "./adom/image_2.jpg",
+          "./adom/image_3.jpg",
+          "./adom/image_4.jpg",
+          "./adom/image_5.jpg",
+          "./adom/image_6.jpg",
+        ],
+      };
+
+      let type = "video";
+      let index = 0;
+
+      const modal = document.getElementById("modal");
+      const viewer = document.getElementById("viewer");
+      const backIcon = document.querySelector(".back-icon");
+
+      /* =========================
+   OPEN MEDIA
+========================= */
+      function openMedia(mediaType, i) {
+        type = mediaType;
+        index = i;
+
+        modal.classList.add("active");
+        loadMedia();
+      }
+
+      /* =========================
+   LOAD MEDIA + PLACEHOLDER
+========================= */
+      function loadMedia() {
+        viewer.innerHTML = "";
+
+        const src = media[type][index];
+
+        // ================= VIDEO =================
+        if (type === "video") {
+          const loader = document.createElement("div");
+          loader.className = "loading";
+          loader.textContent = "Loading video...";
+          viewer.appendChild(loader);
+
+          const video = document.createElement("video");
+          video.src = src;
+          video.controls = true;
+          video.autoplay = true;
+          video.playsInline = true;
+
+          video.onloadeddata = () => {
+            loader.remove();
+            viewer.appendChild(video);
+          };
+
+          video.onerror = () => {
+            loader.textContent = "Failed to load video";
+          };
+        }
+
+        // ================= IMAGE =================
+        else {
+          const loader = document.createElement("div");
+          loader.className = "loading";
+          loader.textContent = "Loading image...";
+          viewer.appendChild(loader);
+
+          const img = document.createElement("img");
+          img.src = src;
+
+          img.onload = () => {
+            loader.remove();
+            viewer.appendChild(img);
+          };
+
+          img.onerror = () => {
+            loader.textContent = "Failed to load image";
+          };
+        }
+      }
+
+      /* =========================
+   NEXT
+========================= */
+      function next() {
+        index = (index + 1) % media[type].length;
+        loadMedia();
+      }
+
+      /* =========================
+   PREV
+========================= */
+      function prev() {
+        index = (index - 1 + media[type].length) % media[type].length;
+        loadMedia();
+      }
+
+      /* =========================
+   CLOSE MODAL
+========================= */
+      function closeModal() {
+        modal.classList.remove("active");
+        viewer.innerHTML = "";
+      }
+
+      /* =========================
+   CLICK OUTSIDE CLOSE
+========================= */
+      window.addEventListener("click", function (e) {
+        if (e.target === modal) closeModal();
+      });
+
+      /* =========================
+   BACK ICON CLOSE
+========================= */
+      backIcon.onclick = closeModal;
+
+      /* =========================
+   ESC KEY CLOSE
+========================= */
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") closeModal();
+      });
+    </script>
+  </body>
+</html>
